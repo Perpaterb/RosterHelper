@@ -5,8 +5,10 @@ import PersonsDay from './PersonsDay'
 import Grid from '@mui/material/Grid';
 
 
+function PersonsWeek({index, staff, shifts, monday, group}) {
 
-function PersonsWeek({index, staffName, shiftNames, shiftStartTimes, shiftBreakStartTimes}) {
+
+
 
     // console.log("index", index)    
     // console.log("shiftNames", shiftNames)
@@ -47,15 +49,16 @@ function PersonsWeek({index, staffName, shiftNames, shiftStartTimes, shiftBreakS
                                 width: 220,
                              }}
                         >
-                            {staffName}
+                            {staff[index].split(',')[0]}
                         </Box>
                         {day.map((dayName, i) => (
                             <PersonsDay
                                 index={i}
                                 dayName={dayName}
-                                shiftNames={shiftNames}
-                                shiftStartTimes={shiftStartTimes}
-                                shiftBreakStartTimes={shiftBreakStartTimes}
+                                shifts={shifts}
+                                staff={staff[index]}
+                                monday={monday}
+                                group={group}
                             />
                         ))}
                     </Grid>
