@@ -23,6 +23,26 @@ function timeAddMinutes(time, min) {
          +(m+"").padStart(2,"0")       // original seconds unchanged
 } 
 
+function getTimeAsNeededForHumanity(time) {
+  time = time.replace(":", "")
+  let ending = 'am'
+  if (time > 1159) {
+    ending = 'pm'
+    if (time > 1259) {
+      let hrs = (parseInt(time.slice(0, 2))-12).toString()
+      if (hrs.length === 1){
+        hrs = '0' + hrs
+      }
+      time = hrs + ":" + time.slice(2) + ending
+    } else {
+    time = time.slice(0, 2) + ":" + time.slice(2) + ending
+    } 
+  } else {
+    time = time.slice(0, 2) + ":" + time.slice(2) + ending
+  }
+  return time
+}
+
 function PersonsDay({index, dayName, shifts, staff, monday, group}) {
 
 
@@ -103,33 +123,53 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
     tempArray.push(monday.add(index, 'day').format('MMM DD, YYYY'))
     tempArray.push(monday.add(index, 'day').format('MMM DD, YYYY'))
     // startTime = event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2)
-    console.log("startTime" ,startTime)
-    if(event.target.value[2] >= 1200) {
-      let hrs = (parseInt(event.target.value[2].slice(0, 2))-12).toString()
-      if (hrs.length === 1){
-        hrs = '0' + hrs
+
+    tempArray.push(getTimeAsNeededForHumanity(event.target.value[2]))
+
+    let endTime = (timeAddMinutes((event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2)), (8*60)))
+    console.log("endTime", endTime)
+    tempArray.push(getTimeAsNeededForHumanity(endTime))
+    tempArray.push('') // "Paid Breaks","Unpaid Breaks"
+    
+
+    if (event.target.value[0] === "Off" | event.target.value[0] === "Sick" | event.target.value[0] === "Leave" | event.target.value[0] === "RDS") {
+      tempArray.push("09:00am - 05:00pm")
+    }else {
+      let breakStart = getTimeAsNeededForHumanity(event.target.value[3])
+      let breakEnd = (timeAddMinutes((event.target.value[3].slice(0, 2) + ":" + event.target.value[3].slice(2)), (60)))
+      console.log("breakEnd", breakEnd)
+      breakEnd = getTimeAsNeededForHumanity(breakEnd)
+      tempArray.push(breakStart + ' - ' + breakEnd)
+    }
+ 
+    tempArray.push('')
+    tempArray.push('')
+    tempArray.push('')
+    tempArray.push('')
+    tempArray.push('')
+    tempArray.push('')
+
+    //console.log("tempArray", tempArray)
+
+    double = 0
+    for (let i = 0; i < humanityCsv.length; i++) {
+      if (humanityCsv[i][0] ===  tempArray[0] & humanityCsv[i][3] === tempArray[3]) {
+        double = 1
+        humanityCsv[i] = tempArray
+        break
       }
-      startTime = hrs + ":" + event.target.value[2].slice(2) + "pm"
-    }else {
-      startTime = event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2) + "am"
     }
-    tempArray.push(startTime)
-    let endTime = (timeAddMinutes((event.target.value[2]), (8*60)))
-    if(endTime >= 1200) {
-      endTime = endTime + "pm"
-    }else {
-      endTime = endTime + "am"
+    if (double === 0) {
+      humanityCsv.push(tempArray)
     }
-    tempArray.push(endTime.slice(0, 2) + ":" + endTime)
 
+    // for (let i = 0; i < humanityCsv.length; i++) {
+    //   if (humanityCsv[i][8] ===  'none') {
+    //     humanityCsv.splice(i,1)
+    //   }
+    // }
 
-
-
-
-
-
-
-    console.log("tempArray", tempArray)
+    localStorage.setItem('humanityCSV', JSON.stringify(humanityCsv))
   }
 
 

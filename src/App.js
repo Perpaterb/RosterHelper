@@ -93,7 +93,7 @@ function App() {
       }
       tempArray.splice(0,1,['none','', '', '', '', ''])
 
-      console.log("Shifts",tempArray)
+      // console.log("Shifts",tempArray)
       setShifts(tempArray)
     }
 
