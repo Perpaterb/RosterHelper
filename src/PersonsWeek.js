@@ -49,7 +49,7 @@ function PersonsWeek({index, staff, shifts, monday, group}) {
                                 width: 220,
                              }}
                         >
-                            {staff[index].split(',')[0]}
+                            {staff[index][0]}
                         </Box>
                         {day.map((dayName, i) => (
                             <PersonsDay
