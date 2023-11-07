@@ -53,6 +53,7 @@ function PersonsWeek({index, staff, shifts, monday, group}) {
                         </Box>
                         {day.map((dayName, i) => (
                             <PersonsDay
+                                key={i + staff + Math.random()*10000}
                                 index={i}
                                 dayName={dayName}
                                 shifts={shifts}

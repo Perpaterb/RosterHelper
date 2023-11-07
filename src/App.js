@@ -184,6 +184,7 @@ function App() {
                 
                 {staff.map((name, i) => (
                   <PersonsWeek 
+                    key={i + staff + Math.random()*10000}
                     index={i}
                     staff={staff}
                     shifts={shifts}

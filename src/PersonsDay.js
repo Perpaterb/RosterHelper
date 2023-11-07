@@ -127,7 +127,7 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
     tempArray.push(getTimeAsNeededForHumanity(event.target.value[2]))
 
     let endTime = (timeAddMinutes((event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2)), (8*60)))
-    console.log("endTime", endTime)
+    // console.log("endTime", endTime)
     tempArray.push(getTimeAsNeededForHumanity(endTime))
     tempArray.push('') // "Paid Breaks","Unpaid Breaks"
     
@@ -137,7 +137,7 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
     }else {
       let breakStart = getTimeAsNeededForHumanity(event.target.value[3])
       let breakEnd = (timeAddMinutes((event.target.value[3].slice(0, 2) + ":" + event.target.value[3].slice(2)), (60)))
-      console.log("breakEnd", breakEnd)
+      // console.log("breakEnd", breakEnd)
       breakEnd = getTimeAsNeededForHumanity(breakEnd)
       tempArray.push(breakStart + ' - ' + breakEnd)
     }
@@ -192,7 +192,7 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
           defaultValue = ""
         >
           {shifts.map((shiftname, index) => (
-            <MenuItem key={shiftname + index} value={shiftname}>
+            <MenuItem key={shiftname + index + Math.random()*10000} value={shiftname}>
               {shiftname[0] + " " + shiftname[3]} 
             </MenuItem>
           ))}
