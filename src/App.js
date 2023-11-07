@@ -11,39 +11,41 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import PersonsWeek from './PersonsWeek'
-
-
-
-function getTeamsCSVFile() {
-  //console.log(JSON.parse(localStorage.getItem('teamsCSV')))
-  return (JSON.parse(localStorage.getItem('teamsCSV'))) 
-} 
-
+import templateFeedData from './templateFeedData.csv';
+import feeddataITSCExample from './feeddataITSCExample.csv';
 
 function App() {
   let teamsCSV = [
     ["Member","Work Email","Group","Shift Start Date","Shift Start Time","Shift End Date","Shift End Time","Theme Color","Custom Label","Unpaid Break (minutes)","Notes","Shared"]
   ]
 
-  let defaultFeed = "Staff {[Matthew Michael,matthew.michael@uts.edu.au],[Andrew Strange,andrew.strange@uts.edu.au],[Andrew Voraboud,andrew.voraboud@uts.edu.au],[Angela Joshi,angela.joshi@uts.edu.au],[Connie Chen,connie.chen@uts.edu.au],[Falak Patel,falak.patel@uts.edu.au],[Michael Phan,michael.phan@uts.edu.au],[Nadeem Mohammed,nadeem.mohammed@uts.edu.au],[Philip Lam,philip.lam@uts.edu.au],[Robert Snars,robert.snars@uts.edu.au],[Zac Illingworth,zac.illingworth@uts.edu.au],[Nikhil Chowdary Dirisala,nikhil.dirisala@uts.edu.au]} Group {ITSC}  Shifts {[Coordinator,1. White,0900,0000,ITSC Coordinator],[Off,1. White,0000,0000,],[Sick,1. White,0000,0000,],[Leave,3. Green,0000,0000,],[RDS,1. White,0000,0000,Working with RDS],[Training,1. White,0000,0000,],[8am UTS,2. Blue,0800,1130,Lunch 11:30am],[8am WHM,8. DarkBlue,0800,1130,Lunch 11:30am],[9am UTS,4. Purple,0900,1230,Lunch 12:30pm],[9am UTS,5. Pink,0900,1330,Lunch 1:30pm],[9am WFH,10. DarkPurple,0900,1230,Lunch 12:30pm],[9am WFH,11. DarkPink,0900,1330,Lunch 1:30pm],[Counter,6. Yellow,0900,1230,Lunch 12:30pm],[10am WFH,11. DarkPink,1000,1430,Lunch 2:30pm],[11am WFH,11. DarkPink,1100,1530,Lunch 3:30pm],[1:30pm WFH,12. DarkYellow,1330,1600,Lunch 4:00pm]}"
+  let humanityCSV = [
+    ["Employee Names","Position","Location","Start Date","End Date","Start Time","End Time","Paid Breaks","Unpaid Breaks","Open Slots","Remote Location","Required Skills","Tags","Title","Note"]
+  ]
+
+  let defaultFeed = "{Staff}\n{Group name in teams}\n{Shifts}"
   const [feedData, setFeedData] = useState('');
   const [staff, setStaff] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [group, setGroup] = useState([]);
   const [monday, setMonday] = useState(dayjs());
-  const [teamsData, setTeamsData] = useState('');
+  const [teamsData, setTeamsData] = useState(teamsCSV);
+  localStorage.setItem('teamsCSV', JSON.stringify(teamsCSV))
+
+  const [humanityData, setHumanityData] = useState(teamsCSV);
+  localStorage.setItem('humanityCSV', JSON.stringify(humanityCSV))
 
   const [errorInFeed, setErroInFeed] = useState(false);
 
   useEffect(() => { 
-    if (localStorage.getItem('FeedData') === undefined) {
+    if (localStorage.getItem('FeedData') === undefined || localStorage.getItem('FeedData') === null) {
+      localStorage.setItem('FeedData', JSON.stringify(defaultFeed))
       setFeedData(defaultFeed)
       updateTable()
     } else {
       setFeedData(localStorage.getItem('FeedData'))
       updateTable()
     } 
-    localStorage.setItem('teamsCSV', JSON.stringify(teamsCSV))
   },[]);
 
 
@@ -65,31 +67,33 @@ function App() {
 
       let tempArray = []
       let feedtemp = localStorage.getItem('FeedData')
-      for (let i = 1; i < feedtemp.split("}")[0].split("{")[1].split("[").length; i++) {
-        tempArray[i] = feedtemp.split("}")[0].split("{")[1].split("[")[i]
+      for (let i = 1; i < feedtemp.split("}")[1].split("{")[0].split("[").length; i++) {
+        tempArray[i] = feedtemp.split("}")[1].split("{")[0].split("[")[i].split("]")[0].split("|")
       }
+      tempArray.splice(0,1)
       setStaff(tempArray)
-
-      //console.log(tempArray)
-
-
+      //console.log("Staff", tempArray)
     
       tempArray = []
-      for (let i = 0; i < feedtemp.split("}")[1].split("{")[1].split(",").length; i++) {
-        tempArray[i] = feedtemp.split("}")[1].split("{")[1].split(",")[i]
+      for (let i = 1; i < feedtemp.split("}")[2].split("{")[0].split("[").length; i++) {
+        tempArray[i] = feedtemp.split("}")[2].split("{")[0].split("[")[i].split("]")[0]
       }
+      tempArray.splice(0,1)
+      // console.log("Group", tempArray)
       setGroup(tempArray)
       
     
       tempArray = []
-      for (let i = 1; i < feedtemp.split("}")[2].split("{")[1].split("[").length; i++) {
+      for (let i = 1; i < feedtemp.split("}")[3].split("{")[0].split("[").length; i++) {
         
         
-        tempArray[i] = feedtemp.split("}")[2].split("{")[1].split("[")[i].split(",").reduce((acc, i) => i ? [...acc, i] : acc, [])
+        tempArray[i] = feedtemp.split("}")[3].split("{")[0].split("[")[i].split("]")[0].split("|").reduce((acc, i) => i ? [...acc, i] : acc, [])
         tempArray[i][4] = tempArray[i][4].slice(0, -1)
         
       }
-      tempArray.splice(0,0,['none','', '', '', ''])
+      tempArray.splice(0,1,['none','', '', '', '', ''])
+
+      console.log("Shifts",tempArray)
       setShifts(tempArray)
     }
 
@@ -119,24 +123,26 @@ function App() {
     updateTable()
   }
 
-  let helpNote = 'Staff {[Name,Email]} Group {group in teams} Shifts {[Name,Theme colour,Start time,Lunch start time,Note]}'
+  let helpNote = '{Staff}\n{Group name in teams}\n{Shifts} CSV format in excel copy from a notepad to this page'
 
   return (
     <div className="App">
       <header className="App-header">
         <Box
           sx={{
-            width: 1300,
+            width: 1400,
             maxWidth: '90%',
-            height: 450,
+            height: 550,
           }}
         >
           Feed Data
           <p>{helpNote}</p>
-          <TextField fullWidth multiline rows={12}
+          <TextField fullWidth multiline rows={15}
             defaultValue={feedData}
             onChange={onChangeFeedData}
           />
+          <Button><a href={templateFeedData} download="templateFeedData.csv">download feed data template</a></Button>
+          <Button><a href={feeddataITSCExample} download="feeddataITSCExample.csv">download feed data ITSC Example</a></Button>
           <Button variant="contained" href="#contained-buttons" onClick={resetFeedData}
             sx={{
               width: 130,
@@ -196,7 +202,9 @@ function App() {
                     }}
                   ></Box>
                 
-                <CSVLink data={JSON.parse(localStorage.getItem('teamsCSV'))} filename={downloadName}> Export Humanity Roster </CSVLink>
+                <CSVLink data={humanityData} asyncOnClick={true} filename={downloadName}
+                  onClick={(event, done) => {setHumanityData(JSON.parse(localStorage.getItem('humanityCSV'))); done(); }}  
+                > Export Humanity Roster </CSVLink>
                 <Box
                     sx={{
                       height: 30,

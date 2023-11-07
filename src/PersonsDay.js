@@ -9,6 +9,8 @@ import FormControl from '@mui/material/FormControl';
 
 // ["Member","Work Email","Group","Shift Start Date","Shift Start Time","Shift End Date","Shift End Time","Theme Color","Custom Label","Unpaid Break (minutes)","Notes","Shared"],
 
+// ["Employee Names","Position","Location","Start Date","End Date","Start Time","End Time","Paid Breaks","Unpaid Breaks","Open Slots","Remote Location","Required Skills","Tags","Title","Note"]
+
 function timeAddMinutes(time, min) {
   var t = time.split(":"),      // convert to array [hh, mm, ss]
       h = Number(t[0]),         // get hours
@@ -36,6 +38,7 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
 
   const [shift, setshift] = useState('');
   let teamsCsv = []
+  let humanityCsv = []
 
   useEffect(() => { 
 
@@ -48,8 +51,8 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
 
     //make new shift 
 
-    let tempArray = staff.split(',').reduce((acc, i) => i ? [...acc, i] : acc, [])
-    tempArray[1] = tempArray[1].slice(0, -1)
+    let tempArray = [staff[0]]
+    tempArray.push(staff[1])
     tempArray.push(group[0])
     tempArray.push(monday.add(index, 'day').format('MM/DD/YYYY'))
     let startTime = event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2)
@@ -87,6 +90,46 @@ function PersonsDay({index, dayName, shifts, staff, monday, group}) {
 
     localStorage.setItem('teamsCSV', JSON.stringify(teamsCsv))
     //console.log(JSON.parse(localStorage.getItem('teamsCSV')))
+
+
+
+
+    // humanityCsv#######
+    humanityCsv = JSON.parse(localStorage.getItem('humanityCSV'))
+
+    tempArray = [staff[0]]
+    tempArray.push(staff[2])
+    tempArray.push(event.target.value[5])
+    tempArray.push(monday.add(index, 'day').format('MMM DD, YYYY'))
+    tempArray.push(monday.add(index, 'day').format('MMM DD, YYYY'))
+    // startTime = event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2)
+    console.log("startTime" ,startTime)
+    if(event.target.value[2] >= 1200) {
+      let hrs = (parseInt(event.target.value[2].slice(0, 2))-12).toString()
+      if (hrs.length === 1){
+        hrs = '0' + hrs
+      }
+      startTime = hrs + ":" + event.target.value[2].slice(2) + "pm"
+    }else {
+      startTime = event.target.value[2].slice(0, 2) + ":" + event.target.value[2].slice(2) + "am"
+    }
+    tempArray.push(startTime)
+    let endTime = (timeAddMinutes((event.target.value[2]), (8*60)))
+    if(endTime >= 1200) {
+      endTime = endTime + "pm"
+    }else {
+      endTime = endTime + "am"
+    }
+    tempArray.push(endTime.slice(0, 2) + ":" + endTime)
+
+
+
+
+
+
+
+
+    console.log("tempArray", tempArray)
   }
 
 
